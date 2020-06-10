@@ -25,17 +25,19 @@ const Wrapper = styled.div`
   transition: 0.3s transform;
 `;
 
-const StyledCard = styled.div`
+const StyledCard = styled.div<TStyledCardProps>`
   ${fullSizeStyle};
+
+  ${({ isFlipped }) =>
+    isFlipped &&
+    css`
+      ${Wrapper} {
+        transform: rotateX(-180deg);
+      }
+    `};
 
   background-color: cyan;
   position: relative;
-
-  &:hover {
-    ${Wrapper} {
-      transform: rotateX(-180deg);
-    }
-  }
 `;
 
 const CardFront = styled.div`
@@ -53,11 +55,22 @@ const CardBack = styled.div`
   transform: rotateX(-180deg);
 `;
 
-export const Card = () => {
+type TCardProps = {
+  data: {
+    id: string;
+    isFlipped: boolean;
+  };
+};
+
+type TStyledCardProps = {
+  isFlipped: boolean;
+};
+
+export const Card = ({ data }: TCardProps) => {
   return (
-    <StyledCard>
+    <StyledCard isFlipped={data.isFlipped}>
       <Wrapper>
-        <CardFront>Some</CardFront>
+        <CardFront>Front</CardFront>
         <CardBack>Back</CardBack>
       </Wrapper>
     </StyledCard>

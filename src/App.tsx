@@ -1,18 +1,48 @@
-import React from "react";
-import { Card } from "./Card";
+import React, { useReducer } from "react";
 import styled from "styled-components";
+import { Card } from "./Card";
+import { initialState, reducer } from "./reducer";
 
-const CardSection = styled.div`
-  width: 100px;
-  height: 100px;
+const BoardSection = styled.div`
+  flex: 0 0 25%;
+  display: flex;
+  height: auto;
+  justify-content: center;
+  align-items: stretch;
+
+  &:before {
+    content: "";
+    display: table;
+    padding-top: 100%;
+  }
 `;
 
-function App() {
+const StyledBoard = styled.div`
+  width: 600px;
+  display: flex;
+  justify-content: start;
+  flex-wrap: wrap;
+`;
+
+const Board = () => {
+  const [state, dispatch] = useReducer(reducer, initialState);
+
   return (
-    <CardSection>
-      <Card />
-    </CardSection>
+    <StyledBoard>
+      {state.cards.map((card) => (
+        <BoardSection
+          key={card.id}
+          onClick={() => dispatch({ type: "FLIP_CARD", data: { id: card.id } })}
+        >
+          <Card data={card} />
+        </BoardSection>
+      ))}
+    </StyledBoard>
   );
+};
+
+function App() {
+  return <Board />;
 }
 
 export default App;
