@@ -1,5 +1,6 @@
 import React from "react";
 import styled, { css } from "styled-components";
+import { TCard } from "./types";
 
 const fullSizeStyle = css`
   width: 100%;
@@ -47,19 +48,18 @@ const CardFront = styled.div`
   background-color: red;
 `;
 
-const CardBack = styled.div`
+const CardBack = styled.div<{ isMatch: boolean }>`
   ${absoluteFullSize};
   ${backfaceVisibilityStyle};
 
-  background-color: yellow;
+  ${({ isMatch }) =>
+    isMatch ? "background-color: blue;" : "background-color: yellow;"};
+
   transform: rotateX(-180deg);
 `;
 
 type TCardProps = {
-  data: {
-    id: string;
-    isFlipped: boolean;
-  };
+  data: TCard;
 };
 
 type TStyledCardProps = {
@@ -70,8 +70,8 @@ export const Card = ({ data }: TCardProps) => {
   return (
     <StyledCard isFlipped={data.isFlipped}>
       <Wrapper>
-        <CardFront>Front</CardFront>
-        <CardBack>Back</CardBack>
+        <CardFront>{data.matchId}</CardFront>
+        <CardBack isMatch={data.isMatch}>{data.matchId}</CardBack>
       </Wrapper>
     </StyledCard>
   );

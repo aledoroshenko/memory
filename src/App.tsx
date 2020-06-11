@@ -1,7 +1,11 @@
-import React, { useReducer } from "react";
+import React, { useEffect, useReducer } from "react";
 import styled from "styled-components";
 import { Card } from "./Card";
-import { initialState, reducer } from "./reducer";
+import { reducer } from "./reducer";
+import { TCard } from "./types";
+import { initialState } from "./initial-state";
+import { Result } from "./Result";
+import { config } from "./config";
 
 const BoardSection = styled.div`
   flex: 0 0 25%;
@@ -18,7 +22,7 @@ const BoardSection = styled.div`
 `;
 
 const StyledBoard = styled.div`
-  width: 600px;
+  width: 800px;
   display: flex;
   justify-content: start;
   flex-wrap: wrap;
@@ -27,17 +31,53 @@ const StyledBoard = styled.div`
 const Board = () => {
   const [state, dispatch] = useReducer(reducer, initialState);
 
+  useEffect(() => {
+    if (state.flipSoon === true) {
+      setTimeout(() => {
+        dispatch({ type: "FLIP_SOON" });
+      }, 1000);
+    }
+  }, [state.flipSoon]);
+
+  const handleClick = (card: TCard) => {
+    if (!card.isMatch) {
+      dispatch({
+        type: "FLIP_CARD",
+        data: { id: card.id, matchId: card.matchId },
+      });
+    }
+  };
+
+  const restartGame = () => {
+    dispatch({ type: "RESTART" });
+  };
+
+  const cards = Object.values(state.cardsByIds);
+
   return (
-    <StyledBoard>
-      {state.cards.map((card) => (
-        <BoardSection
-          key={card.id}
-          onClick={() => dispatch({ type: "FLIP_CARD", data: { id: card.id } })}
-        >
-          <Card data={card} />
-        </BoardSection>
-      ))}
-    </StyledBoard>
+    <div>
+      <div>
+        <p>Moves: {state.moves}</p>
+      </div>
+      <StyledBoard>
+        {cards.map((card: TCard) => (
+          <BoardSection key={card.id} onClick={() => handleClick(card)}>
+            <Card data={card} />
+          </BoardSection>
+        ))}
+      </StyledBoard>
+
+      {state.allFlipped ? (
+        <Result
+          data={{
+            roundDuration: state.roundDuration,
+            moves: state.moves,
+            cardsAmount: config.size,
+          }}
+          onClose={() => restartGame()}
+        />
+      ) : null}
+    </div>
   );
 };
 

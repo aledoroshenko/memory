@@ -1,45 +1,98 @@
-import { v4 as uuid } from "uuid";
-import { Card } from "./types";
+import intervalToDuration from "date-fns/intervalToDuration";
 
-type TAppState = {
-  cards: Card[];
-};
+import { TAppAction, TAppState, TCard } from "./types";
+import { config } from "./config";
+import { initialState } from "./initial-state";
 
-type TFlipAction = {
-  type: "FLIP_CARD";
-  data: {
-    id: string;
-  };
-};
+function flipCard(card: TCard): TCard {
+  const updatedCard = { ...card };
+  updatedCard.isFlipped = !card.isFlipped;
 
-type TAppAction = TFlipAction;
+  return updatedCard;
+}
 
-const CARDS_AMOUNT = 12; // 4, 8, 12, 16
-
-const cards = [...Array(CARDS_AMOUNT)].map(() => {
-  return {
-    id: uuid(),
-    isFlipped: [true, false][Math.floor(Math.random() * 2)],
-  };
-});
-
-export const initialState = {
-  moves: 0,
-  cards,
-};
+let roundStart: null | Date = null;
 
 export const reducer = (state: TAppState, action: TAppAction): TAppState => {
   switch (action.type) {
+    case "RESTART":
+      return { ...initialState };
+
+    case "FLIP_SOON":
+      state.flippedCardsIds.map(
+        (cardId) => (state.cardsByIds[cardId].isFlipped = false)
+      );
+
+      return {
+        ...state,
+        cardsByIds: { ...state.cardsByIds },
+        flippedCardsIds: [],
+      };
+
     case "FLIP_CARD":
-      const newState = state.cards.map((card) => {
-        if (card.id === action.data.id) {
-          card.isFlipped = !card.isFlipped;
+      if (state.moves === 0) {
+        roundStart = new Date();
+      }
+
+      const { id: currentCardId, matchId: currentCardMatchId } = action.data;
+      const moves = state.moves + 1;
+      let flippedCardsIds = [...state.flippedCardsIds, currentCardId];
+      const isEnoughCardsToMatch =
+        flippedCardsIds.length === config.uniqueCardsAmount;
+      let flipSoon = false;
+      let currentMatchedCards = state.matchedCards;
+      let roundDuration = null;
+
+      const updatedCard = flipCard(state.cardsByIds[currentCardId]);
+
+      if (isEnoughCardsToMatch) {
+        const hasMatch = flippedCardsIds.every(
+          (flippedCardId) =>
+            state.cardsByIds[flippedCardId].matchId === currentCardMatchId
+        );
+
+        if (hasMatch) {
+          updatedCard.isMatch = true;
+
+          flippedCardsIds.forEach((cardId) => {
+            state.cardsByIds[cardId] = {
+              ...state.cardsByIds[cardId],
+              isMatch: true,
+            };
+          });
+
+          currentMatchedCards = currentMatchedCards + flippedCardsIds.length;
+
+          flippedCardsIds = [];
+        } else {
+          flipSoon = true;
         }
+      }
 
-        return card;
-      });
+      const allFlipped =
+        currentMatchedCards === Object.values(state.cardsByIds).length;
 
-      return { cards: newState };
+      if (allFlipped && roundStart !== null) {
+        roundDuration = intervalToDuration({
+          start: roundStart,
+          end: new Date(),
+        });
+      }
+
+      return {
+        ...state,
+        moves,
+        cardsByIds: {
+          ...state.cardsByIds,
+          [currentCardId]: updatedCard,
+        },
+        flippedCardsIds,
+        flipSoon,
+        allFlipped: allFlipped,
+        matchedCards: currentMatchedCards,
+        roundDuration,
+      };
+
     default:
       return state;
   }
