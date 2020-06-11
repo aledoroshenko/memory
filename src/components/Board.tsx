@@ -1,4 +1,4 @@
-import { TCard } from "../types/types";
+import { TCard } from "../types/cards";
 import { Card } from "./Card";
 import React, { useEffect } from "react";
 import styled from "styled-components";

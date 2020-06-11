@@ -1,8 +1,8 @@
-import intervalToDuration from "date-fns/intervalToDuration";
-
-import { TAppAction, TAppState, TCard } from "./types/types";
-import { config } from "./config/config";
+import { TCard } from "../types/cards";
 import { initialState } from "./initial-state";
+import { config } from "../config/config";
+import { TAppAction } from "../types/actions";
+import { TAppState } from "../types/state";
 
 function flipCard(card: TCard): TCard {
   const updatedCard = { ...card };
@@ -11,9 +11,10 @@ function flipCard(card: TCard): TCard {
   return updatedCard;
 }
 
-let roundStart: null | Date = null;
-
-export const reducer = (state: TAppState, action: TAppAction): TAppState => {
+export const mainReducer = (
+  state: TAppState,
+  action: TAppAction
+): TAppState => {
   switch (action.type) {
     case "RESTART":
       return { ...initialState };
@@ -31,18 +32,13 @@ export const reducer = (state: TAppState, action: TAppAction): TAppState => {
       };
 
     case "FLIP_CARD":
-      if (state.moves === 0) {
-        roundStart = new Date();
-      }
-
       const { id: currentCardId, matchId: currentCardMatchId } = action.data;
-      const moves = state.moves + 1;
+
       let flippedCardsIds = [...state.flippedCardsIds, currentCardId];
       const isEnoughCardsToMatch =
         flippedCardsIds.length === config.uniqueCardsAmount;
       let flipSoon = false;
       let currentMatchedCards = state.matchedCards;
-      let roundDuration = null;
 
       const updatedCard = flipCard(state.cardsByIds[currentCardId]);
 
@@ -70,28 +66,15 @@ export const reducer = (state: TAppState, action: TAppAction): TAppState => {
         }
       }
 
-      const allFlipped =
-        currentMatchedCards === Object.values(state.cardsByIds).length;
-
-      if (allFlipped && roundStart !== null) {
-        roundDuration = intervalToDuration({
-          start: roundStart,
-          end: new Date(),
-        });
-      }
-
       return {
         ...state,
-        moves,
         cardsByIds: {
           ...state.cardsByIds,
           [currentCardId]: updatedCard,
         },
         flippedCardsIds,
         flipSoon,
-        allFlipped: allFlipped,
         matchedCards: currentMatchedCards,
-        roundDuration,
       };
 
     default:

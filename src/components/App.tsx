@@ -1,9 +1,9 @@
 import React, { useCallback, useEffect, useReducer, useState } from "react";
 import styled, { createGlobalStyle } from "styled-components";
-import { reducer } from "../reducer";
-import { TCard } from "../types/types";
-import { initialState } from "../initial-state";
-import { Result } from "../Result";
+import { reducer } from "../reducers/reducer";
+import { TCard } from "../types/cards";
+import { initialState } from "../reducers/initial-state";
+import { Result } from "./Result";
 import { config } from "../config/config";
 import { Board } from "./Board";
 
@@ -72,14 +72,16 @@ function App() {
   const cards = state.cardIds.map((id) => state.cardsByIds[id]);
 
   useEffect(() => {
-    if (state.allFlipped) {
+    const allCardsFlipped = state.matchedCards === state.cardIds.length;
+
+    if (allCardsFlipped) {
       setTimeout(() => {
         setShowResult(true);
-      }, 1500);
+      }, 1000);
     } else {
       setShowResult(false);
     }
-  }, [state.allFlipped]);
+  }, [state.matchedCards, state.cardIds]);
 
   return (
     <React.Fragment>
