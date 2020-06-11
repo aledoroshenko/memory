@@ -10,7 +10,7 @@ type TImagesByTheme = {
 };
 
 export const imagesByTheme: TImagesByTheme = {
-  cats: {
+  CATS: {
     covers: ["/tiles/cats/covers/1.png"],
     tiles: [
       "/tiles/cats/tiles/1.png",

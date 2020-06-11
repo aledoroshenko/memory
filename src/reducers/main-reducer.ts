@@ -1,8 +1,8 @@
 import { TCard } from "../types/cards";
-import { initialState } from "./initial-state";
 import { config } from "../config/config";
 import { TAppAction } from "../types/actions";
 import { TAppState } from "../types/state";
+import { createInitialState } from "../helpers/create-initial-state";
 
 function flipCard(card: TCard): TCard {
   const updatedCard = { ...card };
@@ -16,8 +16,28 @@ export const mainReducer = (
   action: TAppAction
 ): TAppState => {
   switch (action.type) {
+    case "UPDATE_BOARD_SIZE":
+      const sizes = {
+        SMALL: 8,
+        MEDIUM: 12,
+        LARGE: 16,
+      };
+      return {
+        ...createInitialState({
+          theme: "CATS",
+          boardSize: sizes[action.data.size],
+          uniqueCardsAmount: state.appSettings.uniqueCardsAmount,
+        }),
+      };
+
     case "RESTART":
-      return { ...initialState };
+      return {
+        ...createInitialState({
+          theme: "CATS",
+          boardSize: state.appSettings.boardSize,
+          uniqueCardsAmount: state.appSettings.uniqueCardsAmount,
+        }),
+      };
 
     case "FLIP_SOON":
       state.flippedCardsIds.map(

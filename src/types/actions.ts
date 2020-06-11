@@ -14,4 +14,15 @@ export type TRestartAction = {
   type: "RESTART";
 };
 
-export type TAppAction = TFlipCardAction | TFlipSoonAction | TRestartAction;
+export type TUpdateBoardSizeAction = {
+  type: "UPDATE_BOARD_SIZE";
+  data: {
+    size: "SMALL" | "MEDIUM" | "LARGE";
+  };
+};
+
+export type TAppAction =
+  | TFlipCardAction
+  | TFlipSoonAction
+  | TRestartAction
+  | TUpdateBoardSizeAction;

@@ -23,7 +23,7 @@ const ResultDetails = ({ data, onClose }: ResultProps) => {
     <StyledResultDetails>
       <h2>You have memory</h2>
       <p>
-        Matched <strong>{data.cardsAmount / 2} cards</strong> in{" "}
+        Matched <strong>{data.cardsAmount} pairs </strong> in{" "}
         <strong>{data.moves} moves</strong> and spend{" "}
         <strong>
           {data.roundDuration && formatDuration(data.roundDuration)}

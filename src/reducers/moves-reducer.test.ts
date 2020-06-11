@@ -1,11 +1,15 @@
 import { reducer } from "./reducer";
-import { initialState } from "./initial-state";
 import { TFlipCardAction } from "../types/actions";
-import { TAppState } from "../types/state";
+import { createInitialState } from "../helpers/create-initial-state";
+import { config } from "../config/config";
 
 describe("Moves reducer", () => {
   it("should increment moves on every flip action", () => {
-    const state: TAppState = { ...initialState };
+    const state = createInitialState({
+      theme: config.defaultTheme,
+      boardSize: config.boardSize,
+      uniqueCardsAmount: config.uniqueCardsAmount,
+    });
 
     const action: TFlipCardAction = {
       type: "FLIP_CARD",

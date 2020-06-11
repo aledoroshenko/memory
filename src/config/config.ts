@@ -1,10 +1,11 @@
-export const config = {
-  size: 12,
+type TConfig = {
+  boardSize: number;
+  uniqueCardsAmount: number;
+  defaultTheme: "CATS";
+};
+
+export const config: TConfig = {
+  boardSize: 8,
   uniqueCardsAmount: 2,
-  theme: "cats",
-  difficultyLevels: {
-    EASY: { cardsAmount: 6 },
-    MEDIUM: { cardsAmount: 12 },
-    HARD: { cardsAmount: 16 },
-  },
+  defaultTheme: "CATS",
 };

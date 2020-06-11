@@ -10,4 +10,9 @@ export type TAppState = {
   matchedCards: number;
   roundDuration: null | Duration;
   cardIds: string[];
+  appSettings: {
+    boardSize: number;
+    uniqueCardsAmount: number;
+    currentTheme: "CATS";
+  };
 };

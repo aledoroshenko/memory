@@ -1,11 +1,10 @@
 import React, { useCallback, useEffect, useReducer, useState } from "react";
 import styled, { createGlobalStyle } from "styled-components";
-import { reducer } from "../reducers/reducer";
+import { initialState, reducer } from "../reducers/reducer";
 import { TCard } from "../types/cards";
-import { initialState } from "../reducers/initial-state";
 import { Result } from "./Result";
-import { config } from "../config/config";
 import { Board } from "./Board";
+import { BoardSizeChooser } from "./BoardSizeChooser";
 
 const AppShell = styled.div`
   display: flex;
@@ -69,6 +68,9 @@ function App() {
     });
   };
 
+  const setBoardSize = (size: "SMALL" | "MEDIUM" | "LARGE") =>
+    dispatch({ type: "UPDATE_BOARD_SIZE", data: { size } });
+
   const cards = state.cardIds.map((id) => state.cardsByIds[id]);
 
   useEffect(() => {
@@ -92,6 +94,9 @@ function App() {
           <Intro>
             <h1>Memory game</h1>
             <p>Support of themes, difficulty and cats.</p>
+            <p>
+              <BoardSizeChooser onSizeClick={setBoardSize} />
+            </p>
           </Intro>
         </Flex>
 
@@ -110,7 +115,7 @@ function App() {
             data={{
               roundDuration: state.roundDuration,
               moves: state.moves,
-              cardsAmount: config.size,
+              cardsAmount: state.appSettings.boardSize / 2,
             }}
             onClose={() => restartGame()}
           />
