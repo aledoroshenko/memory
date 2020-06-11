@@ -1,7 +1,7 @@
 import intervalToDuration from "date-fns/intervalToDuration";
 
-import { TAppAction, TAppState, TCard } from "./types";
-import { config } from "./config";
+import { TAppAction, TAppState, TCard } from "./types/types";
+import { config } from "./config/config";
 import { initialState } from "./initial-state";
 
 function flipCard(card: TCard): TCard {

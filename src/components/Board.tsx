@@ -1,11 +1,12 @@
-import { TCard } from "./types";
+import { TCard } from "../types/types";
 import { Card } from "./Card";
 import React, { useEffect } from "react";
 import styled from "styled-components";
 
 const BoardSection = styled.div`
-  flex: 0 0 25%;
+  flex: 0 0 23%;
   display: flex;
+  padding: 5px;
   height: auto;
   justify-content: center;
   align-items: stretch;
@@ -20,7 +21,7 @@ const BoardSection = styled.div`
 const StyledBoard = styled.div`
   width: 800px;
   display: flex;
-  justify-content: start;
+  justify-content: center;
   flex-wrap: wrap;
 `;
 

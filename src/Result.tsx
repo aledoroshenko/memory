@@ -21,12 +21,12 @@ type ResultProps = {
 const ResultDetails = ({ data, onClose }: ResultProps) => {
   return (
     <StyledResultDetails>
-      <h2>You have some memory</h2>
+      <h2>You have memory</h2>
       <p>
-        You solve round with <strong>{data.cardsAmount} cards</strong> with{" "}
-        <strong>{data.moves} moves</strong> and{" "}
+        Matched <strong>{data.cardsAmount / 2} cards</strong> in{" "}
+        <strong>{data.moves} moves</strong> and spend
         <strong>
-          spend {data.roundDuration && formatDuration(data.roundDuration)}
+          {data.roundDuration && formatDuration(data.roundDuration)}
         </strong>
         .
       </p>
@@ -37,7 +37,7 @@ const ResultDetails = ({ data, onClose }: ResultProps) => {
 };
 
 const Wrapper = styled.div`
-  position: absolute;
+  position: fixed;
   top: 0;
   right: 0;
   left: 0;

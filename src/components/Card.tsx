@@ -1,6 +1,6 @@
 import React, { useRef } from "react";
 import styled, { css } from "styled-components";
-import { TCard } from "./types";
+import { TCard } from "../types/types";
 
 const fullSizeStyle = css`
   width: 100%;

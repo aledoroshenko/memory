@@ -1,7 +1,7 @@
 import { v4 as uuid } from "uuid";
-import { TCard, TRawCard } from "./types";
-import { config } from "./config";
-import { imagesByTheme } from "./get-images-for-cards";
+import { TCard, TRawCard } from "./types/types";
+import { config } from "./config/config";
+import { imagesByTheme } from "./helpers/get-images-for-cards";
 
 // Form somewhere else collection of fronts and backs
 export const availableRawCards = imagesByTheme[config.theme].tiles

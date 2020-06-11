@@ -1,17 +1,19 @@
-import React, { useCallback, useReducer } from "react";
+import React, { useCallback, useEffect, useReducer, useState } from "react";
 import styled, { createGlobalStyle } from "styled-components";
-import { reducer } from "./reducer";
-import { TCard } from "./types";
-import { initialState } from "./initial-state";
-import { Result } from "./Result";
-import { config } from "./config";
+import { reducer } from "../reducer";
+import { TCard } from "../types/types";
+import { initialState } from "../initial-state";
+import { Result } from "../Result";
+import { config } from "../config/config";
 import { Board } from "./Board";
 
 const AppShell = styled.div`
   display: flex;
   width: 100%;
+  padding: 30px;
   justify-content: center;
   flex-direction: column;
+  box-sizing: border-box;
 `;
 
 const Flex = styled.div`
@@ -44,6 +46,7 @@ const GlobalStyle = createGlobalStyle`
 
 function App() {
   const [state, dispatch] = useReducer(reducer, initialState);
+  const [showResult, setShowResult] = useState(false);
 
   const restartGame = () => {
     dispatch({ type: "RESTART" });
@@ -68,6 +71,16 @@ function App() {
 
   const cards = state.cardIds.map((id) => state.cardsByIds[id]);
 
+  useEffect(() => {
+    if (state.allFlipped) {
+      setTimeout(() => {
+        setShowResult(true);
+      }, 1500);
+    } else {
+      setShowResult(false);
+    }
+  }, [state.allFlipped]);
+
   return (
     <React.Fragment>
       <GlobalStyle />
@@ -82,6 +95,7 @@ function App() {
 
         <Flex>
           <Board
+            data-testid="board"
             cards={cards}
             onCardFlip={flipCard}
             flipSoon={state.flipSoon}
@@ -89,7 +103,7 @@ function App() {
           />
         </Flex>
 
-        {state.allFlipped ? (
+        {showResult ? (
           <Result
             data={{
               roundDuration: state.roundDuration,
