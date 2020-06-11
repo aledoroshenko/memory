@@ -1,11 +1,11 @@
-import React, { useEffect, useReducer } from "react";
+import React, { useCallback, useReducer } from "react";
 import styled, { createGlobalStyle } from "styled-components";
-import { Card } from "./Card";
 import { reducer } from "./reducer";
 import { TCard } from "./types";
 import { initialState } from "./initial-state";
 import { Result } from "./Result";
 import { config } from "./config";
+import { Board } from "./Board";
 
 const AppShell = styled.div`
   display: flex;
@@ -42,39 +42,19 @@ const GlobalStyle = createGlobalStyle`
   }
 `;
 
-const BoardSection = styled.div`
-  flex: 0 0 25%;
-  display: flex;
-  height: auto;
-  justify-content: center;
-  align-items: stretch;
-
-  &:before {
-    content: "";
-    display: table;
-    padding-top: 100%;
-  }
-`;
-
-const StyledBoard = styled.div`
-  width: 800px;
-  display: flex;
-  justify-content: start;
-  flex-wrap: wrap;
-`;
-
-const Board = () => {
+function App() {
   const [state, dispatch] = useReducer(reducer, initialState);
 
-  useEffect(() => {
-    if (state.flipSoon === true) {
-      setTimeout(() => {
-        dispatch({ type: "FLIP_SOON" });
-      }, 1000);
-    }
-  }, [state.flipSoon]);
+  const restartGame = () => {
+    dispatch({ type: "RESTART" });
+  };
 
-  const handleClick = (card: TCard) => {
+  // UseCallback because we pass it to useEffect
+  const flipCardsBack = useCallback(() => {
+    dispatch({ type: "FLIP_SOON" });
+  }, []);
+
+  const flipCard = (card: TCard) => {
     // Waiting for reset, don't accept clicks
     if (state.flipSoon === true) {
       return false;
@@ -84,10 +64,6 @@ const Board = () => {
       type: "FLIP_CARD",
       data: { id: card.id, matchId: card.matchId },
     });
-  };
-
-  const restartGame = () => {
-    dispatch({ type: "RESTART" });
   };
 
   const cards = Object.values(state.cardsByIds);
@@ -105,13 +81,12 @@ const Board = () => {
         </Flex>
 
         <Flex>
-          <StyledBoard>
-            {cards.map((card: TCard) => (
-              <BoardSection key={card.id}>
-                <Card data={card} onClick={() => handleClick(card)} />
-              </BoardSection>
-            ))}
-          </StyledBoard>
+          <Board
+            cards={cards}
+            onCardFlip={flipCard}
+            flipSoon={state.flipSoon}
+            flipCardsBack={flipCardsBack}
+          />
         </Flex>
 
         {state.allFlipped ? (
@@ -149,10 +124,6 @@ const Board = () => {
       </AppShell>
     </React.Fragment>
   );
-};
-
-function App() {
-  return <Board />;
 }
 
 export default App;
