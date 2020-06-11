@@ -17,6 +17,7 @@ export type TAppState = {
   flippedCardsIds: string[];
   matchedCards: number;
   roundDuration: null | Duration;
+  cardIds: string[];
 };
 
 export type TFlipAction = {

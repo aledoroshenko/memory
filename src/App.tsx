@@ -66,7 +66,7 @@ function App() {
     });
   };
 
-  const cards = Object.values(state.cardsByIds);
+  const cards = state.cardIds.map((id) => state.cardsByIds[id]);
 
   return (
     <React.Fragment>

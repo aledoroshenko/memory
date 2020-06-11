@@ -52,6 +52,7 @@ const cards = prepareCardsForBoard(rawCards);
 export const initialState = {
   moves: 0,
   cardsByIds: normalizeCards(cards),
+  cardIds: cards.map((card) => card.id),
   flippedCardsIds: [],
   flipSoon: false,
   allFlipped: false,
