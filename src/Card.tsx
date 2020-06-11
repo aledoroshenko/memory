@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useRef } from "react";
 import styled, { css } from "styled-components";
 import { TCard } from "./types";
 
@@ -7,7 +7,7 @@ const fullSizeStyle = css`
   height: 100%;
 `;
 
-const absoluteFullSize = css`
+const absoluteFullSizeStyle = css`
   position: absolute;
   top: 0;
   right: 0;
@@ -15,63 +15,75 @@ const absoluteFullSize = css`
   left: 0;
 `;
 
-const backfaceVisibilityStyle = css`
+const cardStyle = css<TCardSideProps>`
   backface-visibility: hidden;
+  box-shadow: 0 0 3px 0 rgba(0, 0, 0, 0.2);
+  ${({ url }) => `background: #fff url(".${url}") no-repeat center center;`};
+  border: 1px solid aliceblue;
+  background-size: cover;
 `;
 
 const Wrapper = styled.div`
   ${fullSizeStyle};
-
   transform-style: preserve-3d;
   transition: 0.3s transform;
+
+  &:active {
+    transform: scale(0.875);
+  }
 `;
 
 const StyledCard = styled.div<TStyledCardProps>`
+  position: relative;
   ${fullSizeStyle};
-
   ${({ isFlipped }) =>
     isFlipped &&
     css`
       ${Wrapper} {
-        transform: rotateX(-180deg);
+        transform: rotateX(-180deg) rotateZ(5deg);
       }
     `};
-
-  background-color: cyan;
-  position: relative;
 `;
 
-const CardFront = styled.div`
+const CardBack = styled.div<TCardSideProps>`
+  ${cardStyle};
   ${fullSizeStyle};
-  ${backfaceVisibilityStyle};
-
-  background-color: red;
+  ${({ angle }) => `transform: rotateZ(${angle})`};
 `;
 
-const CardBack = styled.div<{ isMatch: boolean }>`
-  ${absoluteFullSize};
-  ${backfaceVisibilityStyle};
-
-  ${({ isMatch }) =>
-    isMatch ? "background-color: blue;" : "background-color: yellow;"};
-
-  transform: rotateX(-180deg);
+const CardFront = styled.div<TCardSideProps>`
+  ${cardStyle};
+  ${absoluteFullSizeStyle};
+  ${({ angle }) => `transform: rotateX(-180deg) rotateZ(${angle})`};
 `;
 
 type TCardProps = {
   data: TCard;
+  onClick: () => void;
 };
 
 type TStyledCardProps = {
   isFlipped: boolean;
 };
 
-export const Card = ({ data }: TCardProps) => {
+type TCardSideProps = {
+  url: string;
+  angle: string;
+};
+
+function getRandomAngle(min: number, max: number) {
+  return `${Math.random() * (max - min) + min}deg`;
+}
+
+export const Card = ({ data, onClick }: TCardProps) => {
+  const { current: angleFront } = useRef(getRandomAngle(-3, 3));
+  const { current: angleBack } = useRef(getRandomAngle(-3, 3));
+
   return (
     <StyledCard isFlipped={data.isFlipped}>
       <Wrapper>
-        <CardFront>{data.matchId}</CardFront>
-        <CardBack isMatch={data.isMatch}>{data.matchId}</CardBack>
+        <CardFront angle={angleFront} url={data.frontUrl} />
+        <CardBack onClick={onClick} angle={angleBack} url={data.backUrl} />
       </Wrapper>
     </StyledCard>
   );

@@ -3,6 +3,8 @@ export type TCard = {
   id: string;
   isMatch: boolean;
   matchId: string;
+  frontUrl: string;
+  backUrl: string;
 };
 
 export type TAppState = {
@@ -37,6 +39,6 @@ export type TAppAction = TFlipAction | TFlipSoonAction | TRestartAction;
 
 export type TRawCard = {
   id: string;
-  front: string;
-  back: string;
+  frontUrl: string;
+  backUrl: string;
 };

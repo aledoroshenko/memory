@@ -1,11 +1,46 @@
 import React, { useEffect, useReducer } from "react";
-import styled from "styled-components";
+import styled, { createGlobalStyle } from "styled-components";
 import { Card } from "./Card";
 import { reducer } from "./reducer";
 import { TCard } from "./types";
 import { initialState } from "./initial-state";
 import { Result } from "./Result";
 import { config } from "./config";
+
+const AppShell = styled.div`
+  display: flex;
+  width: 100%;
+  justify-content: center;
+  flex-direction: column;
+`;
+
+const Flex = styled.div`
+  width: 100%;
+  display: flex;
+  justify-content: center;
+`;
+
+const Intro = styled.div`
+  text-align: center;
+  margin-top: 30px;
+  margin-bottom: 30px;
+
+  max-width: 600px;
+
+  h1 {
+    margin-bottom: 0;
+  }
+
+  p {
+    margin: 10px;
+  }
+`;
+
+const GlobalStyle = createGlobalStyle`
+  body {
+    background-color: #e2e8ea;
+  }
+`;
 
 const BoardSection = styled.div`
   flex: 0 0 25%;
@@ -40,12 +75,15 @@ const Board = () => {
   }, [state.flipSoon]);
 
   const handleClick = (card: TCard) => {
-    if (!card.isMatch) {
-      dispatch({
-        type: "FLIP_CARD",
-        data: { id: card.id, matchId: card.matchId },
-      });
+    // Waiting for reset, don't accept clicks
+    if (state.flipSoon === true) {
+      return false;
     }
+
+    dispatch({
+      type: "FLIP_CARD",
+      data: { id: card.id, matchId: card.matchId },
+    });
   };
 
   const restartGame = () => {
@@ -55,29 +93,61 @@ const Board = () => {
   const cards = Object.values(state.cardsByIds);
 
   return (
-    <div>
-      <div>
-        <p>Moves: {state.moves}</p>
-      </div>
-      <StyledBoard>
-        {cards.map((card: TCard) => (
-          <BoardSection key={card.id} onClick={() => handleClick(card)}>
-            <Card data={card} />
-          </BoardSection>
-        ))}
-      </StyledBoard>
+    <React.Fragment>
+      <GlobalStyle />
 
-      {state.allFlipped ? (
-        <Result
-          data={{
-            roundDuration: state.roundDuration,
-            moves: state.moves,
-            cardsAmount: config.size,
-          }}
-          onClose={() => restartGame()}
-        />
-      ) : null}
-    </div>
+      <AppShell>
+        <Flex>
+          <Intro>
+            <h1>Memory game</h1>
+            <p>Support of themes, difficulty and cats.</p>
+          </Intro>
+        </Flex>
+
+        <Flex>
+          <StyledBoard>
+            {cards.map((card: TCard) => (
+              <BoardSection key={card.id}>
+                <Card data={card} onClick={() => handleClick(card)} />
+              </BoardSection>
+            ))}
+          </StyledBoard>
+        </Flex>
+
+        {state.allFlipped ? (
+          <Result
+            data={{
+              roundDuration: state.roundDuration,
+              moves: state.moves,
+              cardsAmount: config.size,
+            }}
+            onClose={() => restartGame()}
+          />
+        ) : null}
+
+        <Flex>
+          <Intro>
+            <p>
+              <strong>Themes support</strong>
+            </p>
+            <p>
+              Add new folder with cards tiles - and you will have set of cards
+              to play: based on available unique tiles game create set of pairs
+              of cards
+            </p>
+            <br />
+            <p>
+              <strong>Difficulties switcher</strong>
+            </p>
+            <p>
+              Amount of cards on the board and amount of unique pieces are in
+              the config, and with updating two numbers game could vary in
+              difficulty and adjust matching logic.
+            </p>
+          </Intro>
+        </Flex>
+      </AppShell>
+    </React.Fragment>
   );
 };
 

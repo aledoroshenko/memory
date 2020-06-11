@@ -1,13 +1,28 @@
 import { v4 as uuid } from "uuid";
 import { TCard, TRawCard } from "./types";
 import { config } from "./config";
+import { imagesByTheme } from "./get-images-for-cards";
 
 // Form somewhere else collection of fronts and backs
-export const availableRawCards = [...Array(20)].map(() => ({
-  id: uuid(),
-  front: "FRONT",
-  back: "BACK",
-}));
+export const availableRawCards = imagesByTheme[config.theme].tiles
+  .map((tileUrl) => ({
+    id: uuid(),
+    frontUrl: tileUrl,
+    backUrl: imagesByTheme[config.theme].covers[0],
+  }))
+  .sort(() => Math.random() - 0.5);
+
+function getRawCards(
+  availableRawCards: TRawCard[],
+  boardSize: number,
+  uniqueCards: number
+) {
+  return Array.from({ length: boardSize / uniqueCards })
+    .flatMap((_, i) =>
+      Array.from({ length: uniqueCards }, () => availableRawCards[i])
+    )
+    .sort(() => Math.random() - 0.5);
+}
 
 function normalizeCards(cards: TCard[]): { [key: string]: TCard } {
   return cards.reduce((memo, card) => {
@@ -21,19 +36,10 @@ function prepareCardsForBoard(rawCards: TRawCard[]): TCard[] {
     isFlipped: false,
     isMatch: false,
     matchId: rawCard.id,
+    frontUrl: rawCard.frontUrl,
+    backUrl: rawCard.backUrl,
   }));
 }
-
-const getRawCards = (
-  availableRawCards: TRawCard[],
-  boardSize: number,
-  uniqueCards: number
-) =>
-  Array.from({ length: boardSize / uniqueCards })
-    .flatMap((_, i) =>
-      Array.from({ length: uniqueCards }, () => availableRawCards[i])
-    )
-    .sort(() => Math.random() - 0.5);
 
 const rawCards = getRawCards(
   availableRawCards,

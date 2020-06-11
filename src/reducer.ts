@@ -27,6 +27,7 @@ export const reducer = (state: TAppState, action: TAppAction): TAppState => {
         ...state,
         cardsByIds: { ...state.cardsByIds },
         flippedCardsIds: [],
+        flipSoon: false,
       };
 
     case "FLIP_CARD":
